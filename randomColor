@@ -1,0 +1,34 @@
+// by Playground
+import UIKit
+import PlaygroundSupport
+
+extension UIColor {
+    open class var randomColor: UIColor {
+        get {
+            let red = CGFloat(arc4random() % 256)/255.0
+            let green = CGFloat(arc4random() % 256)/255.0
+            let blue = CGFloat(arc4random() % 256)/255.0
+            
+            return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
+        }
+    }
+}
+
+let width = 200
+let height = 400
+
+let itemWidth = 5
+let rowNums = height/itemWidth
+let colNums = width/itemWidth
+
+let view = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
+
+for i in 0...rowNums {
+    for j in 0...colNums {
+        let item = UIView(frame: CGRect(x: j*itemWidth, y: i*itemWidth, width: itemWidth, height: itemWidth))
+        item.backgroundColor = UIColor.randomColor
+        view.addSubview(item)
+    }
+}
+
+PlaygroundPage.current.liveView = view
