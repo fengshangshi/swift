@@ -1,44 +1,132 @@
 import Foundation
 import UIKit
 
-let manager = FileManager.default
-let urlForDocument = manager.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask)
+// Home目录
+let homeDirectory = NSHomeDirectory()
+print(homeDirectory)
 
-let url = urlForDocument[0] as NSURL
+// Documents目录 苹果建议将程序中建立的或在程序中浏览到的文件数据保存在该目录下，
+// iTunes备份和恢复的时候会包含此目录
+let documentPaths = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)
+let documentPath = documentPaths[0] 
+//documentPath == homeDirectory + "/Documents"
 
-// 对指定路径执行浅搜索，返回指定目录路径下的文件、子目录及符号链接的列表
-let contentsOfPath = try? manager.contentsOfDirectory(atPath: url.path!)
-print("contentsOfPath: \(contentsOfPath)")
+// Library目录 这个目录下有2个子目录：Caches缓存，Preferences偏好设置，
+// 不应该直接创建偏好设置文件，使用NSUserDefaults类
+let libraryPaths = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.libraryDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)
+let libraryPath = libraryPaths[0]
+//libraryPath == homeDirectory + "/Library"
 
-// 对指定路劲执行浅搜索，返回指定目录路径下的文件、子目录及符号链接的列表
-let contentsOfURL = try? manager.contentsOfDirectory(at: url as URL, includingPropertiesForKeys: nil, options: FileManager.DirectoryEnumerationOptions.skipsHiddenFiles)
-print("contentsOfURL: \(contentsOfURL)")
+// Cache目录 主要存放缓存文件，itunes不会备份此目录，此目录下文件不会在应用退出时删除
+let cachePaths = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.cachesDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)
+let cachePath = cachePaths[0]
+//cachePath == homeDirectory + "/Library/Caches"
 
-// 深度遍历，会递归遍历子文件夹（但不会递归符号链接）
-let enumeratorAtPath = manager.enumerator(atPath: url.path!)
-print("enumeratorAtPath: \(enumeratorAtPath?.allObjects)")
+// tmp目录 用于存放临时文件，保持应用程序再次启动过程中不需要的信息，重启后清空
+let tempDirectory = NSTemporaryDirectory()
+//tempDirectory == homeDirectory + "/tmp" //false?
 
-// 深度遍历，会递归遍历子文件夹（包括符号链接、所有要求性能的话enumeratorAtPath）
-let subPaths = manager.subpaths(atPath: url.path!)
-print("subPaths: \(subPaths)")
+// 操作文件
+var fileManager = FileManager.default
 
-
-// 判断文件或文件夹是否存在
-// NSHomeDirectory()得到程序所在的根目录
-let fileManager = FileManager.default
-let filePath: String = NSHomeDirectory() + "/Documents/fold1/test2.txt"
-var exist = fileManager.fileExists(atPath: filePath)
-print(filePath)
+let mydir1 = homeDirectory + "/Documents/myfolder/images"
+let mydir2 = homeDirectory + "/Documents/myfolder/films"
+let mydir3 = homeDirectory + "/Documents/myfolder/musics"
+let mydir4 = homeDirectory + "/Documents/myfolder/files"
 
 
-// 创建文件夹
-// 方法一
-let myDirectory: String = NSHomeDirectory() + "/Documents/myFolder/Files"
+// withIntermediateDirectories设置为true,代表中间所有的路径目录如果不存在，都会创建
+try! fileManager.createDirectory(atPath: mydir1, withIntermediateDirectories: true, attributes: nil)
+try! fileManager.createDirectory(atPath: mydir2, withIntermediateDirectories: true, attributes: nil)
+try! fileManager.createDirectory(atPath: mydir3, withIntermediateDirectories: true, attributes: nil)
+try! fileManager.createDirectory(atPath: mydir4, withIntermediateDirectories: true, attributes: nil)
 
-try! fileManager.createDirectory(at: URL.init(fileURLWithPath: myDirectory), withIntermediateDirectories: true, attributes: nil)
+// 创建文件可以通过write方法将一些对象写入到文件中
+// String to file
+var filePath = mydir4 + "/appInfo.txt"
+var info = "test is test text\n"
+try! info.write(toFile: filePath, atomically: true, encoding: String.Encoding.utf8)
 
-// 将对象写入文件
-// 把String保存到文件
-let filePath1: String = NSHomeDirectory() + "/Documents/string.txt"
-let info = "欢迎来到string写入到文件"
-try! info.write(toFile: filePath1, atomically: true, encoding: String.Encoding.utf8)
+
+// 保存图片
+var image = UIImage(named: "2.jpg")
+var data: Data = UIImageJPEGRepresentation(image!, 1.0)!
+var data1: Data = UIImagePNGRepresentation(image!)!
+try! data.write(to: URL(fileURLWithPath: mydir1 + "/2.jpg"))
+try! data1.write(to: URL(fileURLWithPath: mydir1 + "/2.png"))
+
+
+// 保存NSArray
+var array = NSArray(objects: 111, 222, 333)
+array.write(toFile: mydir4 + "/array.plist", atomically: true)
+
+// 保存NSDictionary 注意后面的forKeys，必须类型保持一致
+//var dictionray = NSDictionary(objects: ["111", "222", 3333], forKeys: ["shangshi" as NSCopying, "2" as NSCopying, "3" as NSCopying])
+//dictionray.write(toFile: mydir4 + "/dic.plist", atomically: true)
+var dic = NSDictionary(objects: ["1111","2222","3333"], forKeys: ["1" as NSCopying,"2" as NSCopying,"3" as NSCopying])
+dic.write(toFile: mydir4 + "/dictionary.plist", atomically: true)
+
+
+// 判断目录是否存在
+var isExist = fileManager.fileExists(atPath: filePath)
+
+//// 移动文件
+//var filePath2 = mydir1 + "/appInfo.txt"
+//try! fileManager.moveItem(atPath: filePath, toPath: filePath2) throws -> print("111")
+//
+//
+//// 移动、重命名
+//var filePath3 = mydir1 + "/appInfo2.txt"
+//try! fileManager.moveItem(atPath: filePath2, toPath: filePath3)
+//
+//
+//// 拷贝、重命名
+//var filePath4 = mydir1 + "/appInfoCopy.txt"
+//try! fileManager.copyItem(atPath: filePath3, toPath: filePath4)
+//
+
+
+// 获取目录下所有文件
+var fileArray = fileManager.subpaths(atPath: homeDirectory)
+//for file in fileArray! {
+//    print(file)
+//}
+
+//if let files = fileArray {
+//    for file in files {
+//        print(file)
+//    }
+//}
+
+// 获取文件各项属性
+var attributes = try! fileManager.attributesOfItem(atPath: filePath)
+//print("attributes: \(attributes.keys)")
+
+for attr in attributes {
+//    if String(describing: attr.key) == "NSFileType" {
+//        print("fileType: \(attr.value)")
+//    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
