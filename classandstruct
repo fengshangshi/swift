@@ -1,0 +1,135 @@
+
+
+
+
+// 类与结构体的对比
+/**
+ * 共同点
+ * 定义属性用来存储值
+ * 定义方法用来提供功能
+ * 定义下标脚本用来允许使用下标语法访问值
+ * 定义初始化器用来初始化状态
+ * 可以被扩展来默认所没有的功能
+ * 遵循协议来针对特定类型提供标准功能
+ */
+
+/**
+ * 类有而结构体没有的额外功能
+ * 继承允许一个类继承另一个类
+ * 类型转换允许你在运行检查和解释一个类实例的类型
+ * 反初始化器允许一个类实例释放任何其所被分配的资源
+ * 引用计数允许不止一个类实例的引用
+ */
+
+struct Resolution {
+    var width = 0
+    var height = 0
+}
+
+class VideoMode {
+    var resolution = Resolution()
+    var interlaced = false
+    var frameRate = 0.0
+    var name: String?
+}
+
+let someResolution = Resolution()
+let someVideoMode = VideoMode()
+
+
+
+// 访问属性
+print("The width of someResolution is \(someResolution.width)")
+print("The width of someVideoMode is \(someVideoMode.resolution.width)")
+
+
+// 结构体类型的成员初始化器
+// 所有的结构体都有一个自动生成的成员初始化器，你可以使用它来初始化新结构体实例的成员属性，新实例属性的初始化值可以通过属性名称传递到成员初始化器中
+let vga = Resolution(width: 640, height: 480)
+vga.height
+vga.width
+
+// 与结构体不同，类实例不会接收默认的成员初始化器
+
+
+// 结构体和枚举是值类型
+// 值类型是一种当它被指定到常量或者变量，或者被传递给函数时会被拷贝的类型
+// 所有的基本类型都是值类型，在后台都以结构体的形式实现
+
+
+let hd = Resolution(width: 1920, height: 1080)
+var cinema = hd
+
+cinema.width = 2048
+print("cinema is now \(cinema.width) pixels wide")
+print("hd is still \(hd.width) pixels wide")
+
+// 这种行为同样适用于枚举
+enum CompassPoint {
+    case North, South, East, West
+}
+var currentDirection = CompassPoint.West
+let rememberedDirection = currentDirection
+currentDirection = .East
+if rememberedDirection == .West {
+    print("The remembered direction is still .West")
+}
+
+
+// 类是引用类型
+let tenEighty = VideoMode()
+tenEighty.resolution = hd
+tenEighty.interlaced = true
+tenEighty.name = "1080i"
+tenEighty.frameRate = 25.0
+
+let alsoTenEighty = tenEighty
+alsoTenEighty.frameRate = 30.0
+
+// 因为类是引用类型，tenEighty和alsoTenEighty其实都是引用了相同的VideoMode实例，实际上，它们只是相同实例的两个不同命名罢了。
+print("The frameRate property of tenEighty is now \(tenEighty.frameRate)")
+
+// 这里比较有意思，tenEighty和alsoTenEighty都被声明为常量，但是例子中依然改变了tenEighty.frameRate和alsoTenEighty.frameRate，是因为tenEighty和alsoTenEighty常量本身的值不会改变，这两个常量本身并没有存储VideoMode的实例，相反，他们两者在后台都指向了VideoMode实例，例子中只是VideoMode的frameRate属性在改变而不是引用VideoMode的常量的值在改变
+
+
+
+// 特征运算符
+/*
+  相同于(===) 指出两个常量或者变量是否引用自同一个类实例
+  不相同于(!==)
+ */
+
+if tenEighty === alsoTenEighty {
+    print("tenEighty and alsoTenEighty refer to the same VideoMode instance.")
+}
+
+// 指针 swift中的常量和变量指向某个实例的引用类型和C中的指针类似，但是这并不是直接指向内存地址的指针，也不需要书写星号(*)来明确你建立一个引用，相反，这些引用被定义得就像swift中其他常量或者变量一样。
+
+
+
+/*
+类和结构体之间的选择
+ * 结构体的主要目的是为了封装一些相关的简单数据值
+ * 当在赋予或者传递结构体实例时，有理由需要封装的数据值被拷贝而不是引用
+ * 任何存储在结构体中的属性是值类型，也将被拷贝而不是被引用
+ * 结构体不需要从一个已存在类型继承属性或者行为，就是说无法继承
+ 
+ 适合的一些场景：
+ 1、几何形状的大小，可能封装了一个width属性和height属性，两者都为Double类型
+ 2、一定范围的路径，可能封装了一个start属性和length属性，两者为Int类型
+ 3、三维坐标系的一个点，可能封装了一个x,y,z属性，他们都是Double类型
+ 
+ 事实上，大部分自定义的数据结构应该是类，而不是用结构体。
+ */
+
+
+
+/*
+swift的String, Array和Dictionary都是作为结构体来实现的，这意味着字符串、数组和字典在他们被赋值到一个新的常量或者变量，亦或者他们本身被传递到一个函数或方法中的时候，其实是传递了拷贝
+ 
+ Foundation基础中的NSString，NSArray和NSDictionary，它们是作为类来实现的，而不是结构体。
+ */
+
+
+
+
