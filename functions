@@ -1,0 +1,255 @@
+
+
+// 函数的定义和调用
+func greet(person: String) -> String {
+    let greeting = "Hello, " + person + "!"
+    //print(greeting)
+    return greeting
+}
+
+//print(greet(person: "Anna"))
+//print(greet(person: "Brain"))
+//print(greet(person: "冯尚实"))
+
+func greetAgain(person: String) -> String {
+    return "Hello again, \(person)!"
+}
+print(greetAgain(person: "Sugar Feng"))
+
+
+// 函数的形参和返回值
+// 无形参
+func sayHelloWorld() -> String {
+    return "Hello, world!"
+}
+print(sayHelloWorld())
+print(sayHelloWorld())
+
+// 多形参
+func greet(person: String, alreadyGreeted: Bool) -> String {
+    if alreadyGreeted {
+        return greetAgain(person: person)
+    } else {
+        //return greet(person: person)
+        return ""
+    }
+}
+
+print(greet(person: "Tim", alreadyGreeted: true))
+print(greet(person: "Sugar", alreadyGreeted: false))
+//print(greet(person: "FENGSHANGSHI"))
+
+// 相同的函数 函数名、形参、返回值类型都一致
+
+
+// 无返回值
+func greet(person: String) {
+    print("Hello, \(person)")
+}
+//greet(person: "Dave")
+
+func printAndCount(string: String) -> Int {
+    print(string)
+    return string.characters.count
+}
+
+func printWithoutCounting(string: String) {
+    let _ = printAndCount(string: string)
+}
+printAndCount(string: "Hello, world")
+printWithoutCounting(string: "Hello, world")
+
+// 多返回值的函数 利用元组
+//func minMax(array: [Int]) -> (min: Int, max: Int) {
+////func minMax(array: [Int]) -> (Int, Int) {
+//    var currentMin = array[0]
+//    var currentMax = array[0]
+//    
+//    for value in array[1..<array.count] {
+//        if value < currentMin {
+//            currentMin = value
+//        } else if value > currentMax {
+//            currentMax = value
+//        }
+//    }
+//    
+//    return (currentMin, currentMax)
+//}
+//let bounds = minMax(array: [8, -6, 2, 109, 3, 71])
+//print("min is \(bounds.0) and max is \(bounds.1)")
+//print("min is \(bounds.min) and max is \(bounds.max)")
+
+
+// 返回可选元组
+func minMax(array: [Int]) -> (min: Int, max: Int)? {
+    if array.isEmpty { return nil }
+    
+    var currentMin = array[0]
+    var currentMax = array[0]
+    
+    for value in array[1..<array.count] {
+        if value < currentMin {
+            currentMin = value
+        } else if value > currentMax {
+            currentMax = value
+        }
+    }
+    
+    return (currentMin, currentMax)
+}
+if let bounds = minMax(array: [8, -6, 2, 109, 3, 71]) {
+    print("min is \(bounds.min) and max is \(bounds.max)")
+}
+
+// 函数实际参数标签和形式参数名
+// 每个函数的形式参数都包含实际参数标签和形式参数名，默认情况下，形式参数使用它们的形式参数名作为实际参数标签
+
+func greet(person: String, from hometown: String) -> String {
+    return "Hello \(person)! Glad you could visit from \(hometown)"
+}
+print(greet(person: "Bill", from: "Cupertino"))
+
+
+// 省略实际参数标签 利用下划线(_)
+func greet(_ person: String, from hometown: String) -> String {
+    return "Hello \(person)! Glad you could visit from \(hometown)"
+}
+print(greet("冯尚实", from: "浙江台州"))
+
+// 默认参数值
+func someFunction(parameterWithoutDefault: Int, parameterWithDefault: Int = 12) {
+    print("parameterWithoutDefault is \(parameterWithoutDefault), parameterWithDefault is \(parameterWithDefault)")
+}
+someFunction(parameterWithoutDefault: 3, parameterWithDefault: 6)
+someFunction(parameterWithoutDefault: 4)
+
+// 可变个数形参 一个函数最多只能有一个可变形参
+func arithmeticMean(_ numbers: Double...) -> Double {
+    var total: Double = 0
+    
+    for number in numbers {
+        total += number
+    }
+    
+    return total/Double(numbers.count)
+}
+print(arithmeticMean(1, 2, 3, 4, 5))
+print(arithmeticMean(3, 8.25, 18.75))
+
+
+// in-out参数调用
+//输入输出形式参数是函数能影响到函数范围外的另一种替代方式。
+func swapTwoInts(_ a: inout Int, _ b: inout Int) {
+    let value = a
+    a = b
+    b = value
+}
+var someInt = 3
+var anotherInt = 107
+swapTwoInts(&someInt, &anotherInt)
+print("someInt is now \(someInt), and anotherInt is now \(anotherInt)")
+
+
+
+
+
+
+// 函数类型 每个函数都有特定的函数类型，由形参类型和返回类型组成
+// (Int, Int) -> Int
+func addTwoInts(_ a: Int, _ b: Int) -> Int {
+    return a + b
+}
+func multiplyTwoInts(_ a: Int, _ b: Int) -> Int {
+    return a * b
+}
+
+// () -> Void
+func printHelloWorld() {
+    print("Hello, world")
+}
+
+// 使用函数类型 例如给一个常量或变量定义一个函数类型，并且为变量指定一个相应的函数
+//var mathFunction: (Int, Int) -> Int? // 可以定义不报错，但无意义，看下面测试
+//mathFunction = addTwoInts
+//mathFunction
+// mathFunction = nil // 这样来看，给一个函数类型定义成可选无意义
+var mathFunction: (Int, Int) -> Int = addTwoInts
+mathFunction(2, 3)
+
+// 不同函数如果有相同的类型的话，就可以指定给相同的变量，和非函数的类型一样
+mathFunction = multiplyTwoInts
+mathFunction(2, 3)
+
+// swift可以进行类型推断
+let anotherMathFunction = addTwoInts
+
+
+// 函数类型作为形参的类型，说白了就是在swift的函数中可以传递函数
+func printMathResult(_ mathFunction: (Int, Int) -> Int, _ a: Int, _ b: Int) {
+    print("Result: \(mathFunction(a, b))")
+}
+printMathResult(addTwoInts, 3, 5)
+printMathResult(multiplyTwoInts, 3, 5)
+
+// 函数作为返回类型，说白了就是可以在swift函数中返回函数
+//func stepForward(_ input: Int) -> Int {
+//    return input + 1
+//}
+//func stepBackward(_ input: Int) -> Int {
+//    return input - 1
+//}
+//
+//func chooseStepFunction(backwards: Bool) -> (Int) -> Int {
+//    return backwards ? stepBackward : stepForward
+//}
+//
+//var currentValue = 10
+//let moveNearerToZero = chooseStepFunction(backwards: currentValue > 0) // 这种应用场景不错
+//print("Counting to zero:")
+//while currentValue != 0 {
+//    print("\(currentValue)...")
+//    currentValue = moveNearerToZero(currentValue)
+//}
+//print("zero!")
+
+
+// 函数嵌套
+func chooseStepFunction(backwards: Bool) -> (Int) -> Int {
+    func stepForward(input: Int) -> Int { return input + 1 }
+    func stepBackward(input: Int) -> Int { return input  - 1 }
+    return backwards ? stepBackward : stepForward
+}
+
+var currentValue = -4
+let moveNearerToZero = chooseStepFunction(backwards: currentValue > 0)
+while currentValue != 0 {
+    print("\(currentValue)...")
+    currentValue = moveNearerToZero(currentValue)
+}
+print("zero!")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
