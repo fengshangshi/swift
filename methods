@@ -1,0 +1,160 @@
+
+
+
+// 方法
+class Counter {
+    var count = 0
+    func increment() {
+        self.count += 1
+        //count += 1
+    }
+    func increment(by amount: Int) {
+        count += amount
+    }
+    func reset() {
+        count = 0
+    }
+}
+
+let counter = Counter()
+print(counter.count)
+counter.increment()
+print(counter.count)
+counter.increment(by: 5)
+print(counter.count)
+counter.reset()
+print(counter.count)
+
+
+
+
+//struct Point {
+//    var x = 0.0, y = 0.0
+//    func isToTheRightOf(x: Double) -> Bool {
+//        return self.x > x // self.x是指Point的属性x，x是指isToTheRightOf的x参数
+//    }
+//}
+//
+//let somePoint = Point(x: 4.0, y: 5.0)
+//if somePoint.isToTheRightOf(x: 1.0) {
+//    print("This point is to the right of the line where x == 1.0")
+//}
+
+
+// 在实例方法中修改值类型
+// 结构体和枚举是值类型，在默认情况下，值类型属性不能被自身的实例方法修改
+
+// 异变 mutating
+// 如果需要在特定的方法中修改结构体或者枚举的属性
+//struct Point {
+//    var x = 0.0, y = 0.0
+//    mutating func moveByX(x deltaX: Double, y deltaY: Double) {
+//        // 需要通过关键字mutating来变异值类型的属性
+//        self.x += deltaX
+//        self.y += deltaY
+//    }
+//}
+
+//var somePoint = Point(x: 1.0, y: 1.0) // 初始化原点位置
+//print("The point is now at (\(somePoint.x), \(somePoint.y))")
+//somePoint.moveByX(x: 2.0, y: 3.0)
+//print("The point is now at (\(somePoint.x), \(somePoint.y))")
+//
+//// 以下不能修改
+//let fixedPoint = Point(x: 3.0, y: 3.0)
+//fixedPoint.moveByX(x: 2.0, y: 3.0)
+
+
+
+// 在异变方法里指定自身
+// 异变方法可以指定整个实例给隐含的self属性。
+struct Point {
+    var x = 0.0, y = 0.0
+    mutating func moveBy(x deltaX: Double, y deltaY: Double) {
+        self = Point(x: x + deltaX, y: y + deltaY)
+    }
+}
+var somePoint = Point(x: 1.0, y: 1.0) // 初始化原点位置
+print("The point is now at (\(somePoint.x), \(somePoint.y))")
+somePoint.moveBy(x: 2.0, y: 3.0)
+print("The point is now at (\(somePoint.x), \(somePoint.y))")
+
+
+// 枚举的异变方法可以设置隐含的self属性为相同枚举里的不同成员
+enum TriStateSwitch {
+    case off, low, high
+    mutating func next() {
+        switch self {
+        case .off:
+            self = .low
+            
+        case .low:
+            self = .high
+            
+        case .high:
+            self = .off
+        }
+    }
+}
+var ovenLight = TriStateSwitch.low
+ovenLight.next()
+ovenLight.next()
+ovenLight.next()
+
+
+
+
+// 类型方法
+struct LevelTracker {
+    static var highestUnlockedLevel = 1
+    var currentLevel = 1
+    
+    static func unlock(_ level: Int) {
+        if level > highestUnlockedLevel { highestUnlockedLevel = level }
+    }
+    
+    static func isUnlocked(_ level: Int) -> Bool {
+        return level <= highestUnlockedLevel
+    }
+    
+    @discardableResult // 不懂？
+    mutating func advance(to level: Int) -> Bool {
+        if LevelTracker.isUnlocked(level) {
+            currentLevel = level
+            return true
+        } else {
+            return false
+        }
+    }
+}
+
+class Player {
+    var tracker = LevelTracker()
+    let playerName: String
+    
+    func complete(level: Int) {
+        LevelTracker.unlock(level + 1)
+        tracker.advance(to: level + 1)
+    }
+    
+    init(name: String) {
+        playerName = name
+    }
+}
+
+var player = Player(name: "Agryrios")
+player.complete(level: 5)
+print("highest unlocked level is now \(LevelTracker.highestUnlockedLevel)")
+
+
+player = Player(name: "Beto")
+if player.tracker.advance(to: 6) {
+    print("player is now on level 6")
+} else {
+    print("level 6 has not yet been unlocked")
+}
+
+
+
+
+
