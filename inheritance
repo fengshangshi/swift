@@ -1,0 +1,118 @@
+
+
+
+// 继承
+
+// 定义一个基类：任何不从另一个类继承的类都是所谓的基类
+
+class Vehicle {
+    var currentSpeed = 0.0
+    var description: String {
+        return "traveling at \(currentSpeed) miles per hour"
+    }
+    
+    func makeNoise() {
+        
+    }
+}
+
+let someVehicle = Vehicle()
+print("Vehicle: \(someVehicle.description)")
+
+
+
+
+
+
+// 子类
+class Bicycle: Vehicle {
+    var hasBasket = false
+}
+let bicycle = Bicycle()
+bicycle.hasBasket = true
+bicycle.currentSpeed = 15.0
+print("Bicycle: \(bicycle.description)")
+
+// 子类也可以被继承
+class Tandem: Bicycle {
+    var currentNumberOfPassengers = 0
+}
+let tandem = Tandem()
+tandem.hasBasket = true
+tandem.currentNumberOfPassengers = 2
+tandem.currentSpeed = 22.0
+print("Tandem: \(tandem.description)")
+
+
+// 重写 - override
+
+
+
+// 访问父类的方法、属性和下标脚本
+/*
+ 当在子类中提供一个方法、属性或者下标脚本时，有时使用现有的父类实现作为重写的一部分是非常有意义的，比如说：可以重新定义现有实现的行为，或者在现有继承的变量中存储一个修改过的值
+ 可以通过使用super前缀访问父类的方法、属性或下标脚本，这是合适的。
+ 重写方法：super.someMethod()
+ 重写属性：super.somePeoperty
+ 重写下标：super[someIndex]
+ */
+
+// 重写方法
+class Train: Vehicle {
+    override func makeNoise() {
+        print("Choo Choo")
+    }
+}
+let train = Train()
+train.makeNoise()
+
+
+// 重写属性
+class Car: Vehicle {
+    var gear = 1
+    override var description: String {
+        return super.description + " in gear \(gear)"
+    }
+}
+let car = Car()
+car.currentSpeed = 25.0
+car.gear = 3
+print("Car: \(car.description)")
+
+
+// 重写属性观察器
+class AutomaticCar: Car {
+    override var currentSpeed: Double {
+        didSet { // 属性观察器
+            gear = Int(currentSpeed/10.0) + 1
+        }
+    }
+}
+let automatic = AutomaticCar()
+automatic.currentSpeed = 56.0
+print("AutomaticCar: \(automatic.description)")
+
+
+// 阻止重写 final关键字
+/* 
+ final class
+ final var
+ final func
+ final class func 
+ final subscript
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
