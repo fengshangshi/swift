@@ -1,0 +1,162 @@
+
+
+
+
+// 可选链代替强制展开
+// 如果希望可选项为非nil就调用属性、方法或脚本，可以在可选值后面使用问号(?)来明确可选链，这和在可选值后方叹号(!)来强制展开它的值非常类似，主要区别在于可选链会在可选项为nil时得体的失败，而强制展开则在可选项为nil时触发运行时错误。
+
+//class Person {
+//    var residence: Residence?
+//}
+//
+//class Residence {
+//    var numberOfRooms = 1
+//}
+//
+//let john = Person()
+//john.residence = Residence()
+////john.residence?.numberOfRooms
+//
+//if let roomCount = john.residence?.numberOfRooms {
+//    print("John's residence has \(roomCount) room(s).")
+//} else {
+//    print("Unable to retrieve the number of rooms.")
+//}
+
+
+
+// 为可选链定义模型类
+class Person {
+    var residence: Residence?
+}
+
+class Residence {
+    var rooms = [Room]()
+    var numberOfRooms: Int {
+        return rooms.count
+    }
+    subscript(i: Int) -> Room {
+        get {
+            return rooms[i]
+        }
+        set {
+            rooms[i] = newValue
+        }
+    }
+    func printNumberOfRooms() {
+        print("The number of rooms is \(numberOfRooms)")
+    }
+    var address: Address?
+}
+
+class Room {
+    let name: String
+    init(name: String) {
+        self.name = name
+    }
+}
+
+class Address {
+    var buildingName: String?
+    var buildingNumber: String?
+    var street: String?
+    func buildingIdentifier() -> String? {
+        if buildingName != nil {
+            return buildingName
+        } else if buildingNumber != nil && street != nil {
+            return "\(buildingNumber) \(street)"
+        } else {
+            return nil
+        }
+    }
+}
+
+// 通过可选链访问属性
+var john = Person()
+if let roomCount = john.residence?.numberOfRooms {
+    print("John's residence has \(roomCount) room(s)")
+} else {
+    print("Unable to retrieve the number of rooms")
+}
+
+let someAddress = Address()
+someAddress.buildingNumber = "29"
+someAddress.street = "Acacia Road"
+john.residence?.address = someAddress
+
+
+func createAddress() -> Address {
+    print("Function was called.")
+    
+    let someAddress = Address()
+    someAddress.buildingNumber = "29"
+    someAddress.street = "Acacia Road"
+    
+    return someAddress
+}
+john.residence?.address = createAddress()
+
+
+
+
+// 通过可选链调用方法
+if john.residence?.printNumberOfRooms() != nil {
+    print("It was possible to print the number of rooms.")
+} else {
+    print("It was not possible to print the number of rooms.")
+}
+
+
+if (john.residence?.address = someAddress) != nil {
+    print("It was possible to set the address.")
+} else {
+    print("It wase not possible to set the address.")
+}
+
+//通过可选链访问下标
+if let firstRoomName = john.residence?[0].name {
+    print("The first room name is \(firstRoomName).")
+} else {
+    print("Unable to retrieve the first room name.")
+}
+
+john.residence?[0] = Room(name: "Bathroom")
+
+let johnsHouse = Residence()
+johnsHouse.rooms.append(Room(name: "Living Room"))
+johnsHouse.rooms.append(Room(name: "Kitchen"))
+john.residence = johnsHouse
+
+if let firstRoomName = john.residence?[0].name {
+    print("The first room name is \(firstRoomName)")
+} else {
+    print("Unable to retrieve the first room name.")
+}
+
+
+// 访问可选类型的下标
+var testScores = ["Dave": [86, 82, 84], "Bev": [79, 94, 81]]
+testScores["Dave"]?[0] = 91
+testScores["Bev"]?[0] += 1
+testScores["Brian"]?[0] = 72
+testScores
+
+
+
+// 链的多层连接
+/*
+ 你可以通过连接多个可选链来在模型中深入访问属性、方法以及下标，总之，多层可选链不会给返回的值添加多层的可选性。
+ 
+ 也就是说：
+ 1、如果你访问的值不是可选项，它会因为可选链而变成可选项
+ 2、如果你访问的值已经是可选的，它不会因为可选链而变得更加可选
+ 
+ 因此：
+ 1、如果你尝试通过可选链取回一个Int值，就一定会返回Int？，不论通过了多少层的可选链
+ 2、类似的，如果你尝试通过可选链访问Int?值，Int?一定就是返回的类型，无论通过了多少层的可选链
+ 
+ */
+
+
+
+
