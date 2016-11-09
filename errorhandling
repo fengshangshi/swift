@@ -1,0 +1,132 @@
+import UIKit
+
+// 错误处理
+// 错误处理是一个接受和响应来自你程序错误的过程，swift给运行时可恢复错误的抛出、捕获、传递和操纵提供了一类支持。
+
+// 表示和抛出错误
+//enum VendingMachineError: Error {
+//    case invalideSelection
+//    case insufficientFunds(coinsNeeded: Int)
+//    case outOfStock
+//}
+
+enum VendingMachineError: Error {
+    case invalidSelection
+    case insufficientFunds(coinsNeeded: Int)
+    case outOfStock
+}
+
+//throw VendingMachineError.insufficientFunds(coinsNeeded: 5) // 这里很有意思，写了这一行，其他的都不显示错误了
+
+// 处理错误
+/*
+ 1、使用抛出函数传递错误
+ 2、使用do-catch语句来处理错误
+ 3、把错误作为可选项的值
+ 4、断言
+ */
+
+
+// 使用抛出函数传递错误
+struct Item {
+    var price: Int
+    var count: Int
+}
+
+class VendingMachine {
+    var inventory = [
+        "Candy Bar": Item(price: 12, count: 7),
+        "Chips": Item(price: 10, count: 4),
+        "Pretzels": Item(price: 7, count: 11),
+    ]
+    
+    var coinsDeposited = 0
+    
+    func dispenseSnack(snack: String) {
+        print("Dispensing \(snack)")
+    }
+    
+    func vend(itemNamed name: String) throws {
+        guard let item = inventory[name] else {
+            throw VendingMachineError.invalidSelection
+        }
+        
+        guard item.count > 0 else {
+            throw VendingMachineError.outOfStock
+        }
+        
+        guard item.price <= coinsDeposited else {
+            throw VendingMachineError.insufficientFunds(coinsNeeded: item.price - coinsDeposited)
+        }
+        
+        coinsDeposited -= item.price
+        
+        var newItem = item
+        newItem.count -= 1
+        inventory[name] = newItem
+        
+        print("Dispensing \(name)")
+    }
+}
+
+let favoriteSnacks = [
+    "Alice": "Chips",
+    "Bob": "Licorice",
+    "Eve": "Pretzels",
+]
+
+func buyFavoriteSnack(person: String, vendingMachine: VendingMachine) throws {
+    let snackName = favoriteSnacks[person] ?? "Candy Bar"
+    try vendingMachine.vend(itemNamed: snackName)
+}
+
+
+// 使用Do-Catch处理错误
+var vendingMachine = VendingMachine()
+vendingMachine.coinsDeposited = 20
+do {
+    try buyFavoriteSnack(person: "Eve", vendingMachine: vendingMachine)
+} catch VendingMachineError.invalidSelection {
+    print("Invalid Selection.")
+} catch VendingMachineError.outOfStock {
+    print("Out of Stock.")
+} catch VendingMachineError.insufficientFunds(let coinsNeeded) {
+    print("Insufficient funds. Please insert an additional \(coinsNeeded) coins.")
+}
+
+
+// 转换错误为可选项 try？
+func someThrowingFunction() throws -> Int {
+    return 1;
+}
+
+let x = try? someThrowingFunction()
+//x! + 1
+
+let y: Int?
+do {
+    y = try someThrowingFunction()
+} catch {
+    y = nil
+}
+
+// 取消错误传递 try!
+// 如果已经明确知道一个方法不会在运行时抛出错误，在这种情况下，你可以在表达式前写try!来取消错误传递并且把调用放进不会有错误抛出的运行时断言当中，如果错误真的抛出了，将会得到一个运行时错误。
+
+
+// 指定清理操作 defer，无论是因为抛出了错误还是因为return活着break这样的语句结束当前代码块，用defer可以定义一些功能用来做必要的清理工作
+//func processFile(filename: String) throws {
+//    if exists(filename) {
+//        let file = open(filename)
+//        defer {
+//            close(file)
+//        }
+//        while let line = try file.readline() {
+//            // Work with the file.
+//        }
+//        // close(file) is called here, at the end of the scope.
+//    }
+//}
+
+
+
