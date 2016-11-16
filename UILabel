@@ -1,0 +1,166 @@
+
+// by Playground
+import UIKit
+import PlaygroundSupport
+
+
+//let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 48))
+//label.text = "what are you doing" // 显示文字
+//label.textColor = UIColor.black // 字体颜色
+//label.textAlignment = .center // 水平居中
+//label.backgroundColor = UIColor.white // 背景颜色
+//label.adjustsFontSizeToFitWidth = false // 自适应字体大小？？，当字数多的时候，需要在一行放不下
+//label.font = UIFont.systemFont(ofSize: 18) // 字体大小
+////print(UIFont.familyNames)
+//label.font = UIFont(name: "PingFang SC", size: 12)
+//label.numberOfLines = 1 // 文本行数
+//label.lineBreakMode = .byTruncatingMiddle // 超长省略方式
+//label.isUserInteractionEnabled = true // 是否可以交互
+//label.isEnabled = true // 文字是否可以改变
+////label.shadowColor = UIColor.blue // 阴影颜色
+//label.shadowOffset = CGSize(width: 0.5, height: 0.5) // 阴影偏移量
+//label.isHighlighted = true
+//label.highlightedTextColor = UIColor.red
+
+
+//class ViewController: UIViewController {
+//    override func viewDidLoad() {
+//        super.viewDidLoad()
+//        
+//        let view = UIView(frame: CGRect.zero)
+//        self.view.addSubview(view)
+//        
+//        UIView.animate(withDuration: 1, animations: {
+//            view.backgroundColor = UIColor.red
+//            view.frame = self.view.bounds
+//        }) {(b) in
+//            view.backgroundColor = UIColor.yellow
+//        }
+//    }
+//}
+//
+//let view = ViewController()
+
+
+
+
+
+class ViewController: UIViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        let label = UILabel(frame: CGRect(x: 10, y: 20, width: 300, height: 100))
+        
+        // 显示文本
+        label.text = "Welcome to study Swift!"
+        
+        // 字体颜色
+        label.textColor = UIColor.red
+        
+        // 背景颜色
+        label.backgroundColor = UIColor.black
+        
+        // 文字对齐方式
+        /**
+         case left 0
+         case center 1
+         case right 2
+         case justified 3
+         case natural 4
+        */
+        label.textAlignment = .natural
+        
+        // 阴影颜色 阴影偏移量
+        label.shadowColor = UIColor.gray
+        label.shadowOffset = CGSize(width: 2, height: 2)
+        
+        // 多行显示，默认是1，0表示多行
+        // 自适应，1、没有设置多行显示，宽度自适应 2、设置有多行显示，高度使用
+        label.numberOfLines = 2
+        
+        // 当文字超出标签宽度时，自动调整文字大小，使其不被截断
+        label.adjustsFontSizeToFitWidth = true
+        
+        // 文本高亮 高亮文本颜色
+        label.isHighlighted = true
+        label.highlightedTextColor = UIColor.green
+        
+        // 圆角 圆角半径 圆角边框颜色 圆角宽度
+        label.layer.masksToBounds = true
+        label.layer.cornerRadius = 10
+        label.layer.borderColor = UIColor.blue.cgColor
+        label.layer.borderWidth = 1
+        
+        // 字体大小
+        /**
+         systemFontOfSize(_:) -> UIFont 字体大小
+         boldSystemFontOfSize(_:) -> UIFont 加粗字体大小
+         italicSystemFontOfSize(_:) -> UIFont 斜体字体大小
+        */
+        label.font = UIFont.systemFont(ofSize: 50)
+        
+        // 设置字体同时设置大小
+        label.font = UIFont(name: "PingFang SC", size: 50)
+        
+        // 过长截断原则
+        /**
+         case byTruncatingTail 隐藏尾部并显示省略号
+         case byTruncatingMiddle 隐藏中间并显示省略号
+         case byTruncatingHead 隐藏头部并显示省略号
+         case byClipping 截断多余部分，不显示省略号
+         case byCharWrapping 按照字符自动换行
+         case byWordWrapping 按照字自动换行
+        */
+        label.lineBreakMode = .byTruncatingTail
+        label.lineBreakMode = .byTruncatingMiddle
+        label.lineBreakMode = .byTruncatingHead
+        label.lineBreakMode = .byCharWrapping
+        label.lineBreakMode = .byWordWrapping
+        label.lineBreakMode = .byClipping
+        
+        let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(ViewController.tapLabel(sender:)))
+        label.addGestureRecognizer(tapGesture)
+        
+        
+        let view = UIView(frame: CGRect.zero)
+        
+        
+        UIView.animate(withDuration: 1, animations: {
+                        view.backgroundColor = UIColor.red
+                        view.frame = self.view.bounds
+                    }) {(b) in
+                        view.backgroundColor = UIColor.yellow
+                    }
+        view.addSubview(label)
+        self.view.addSubview(view)
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
+    func tapLabel(sender: UITapGestureRecognizer) {
+        print(123)
+        
+        print(sender.description)
+    }
+}
+
+//label.textAlignment = .natural
+//label.textAlignment.rawValue
+//label.numberOfLines
+//label.adjustsFontSizeToFitWidth
+
+
+//let view = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
+//view.addSubview(label)
+let view = ViewController()
+
+
+PlaygroundPage.current.liveView = view
+
+
+
+
+
+
